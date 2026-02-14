@@ -1,0 +1,71 @@
+name: Deploy orders-service to ECS
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: eu-central-1
+  ECR_REPOSITORY: orders-service
+  ECS_CLUSTER: demo-cluster
+  ECS_SERVICE: orders-service
+  CONTAINER_NAME: orders
+  TASK_DEF_PATH: ecs/taskdef.json
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Run tests
+        run: ./gradlew test
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/<ROLE_NAME>
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Compute image URI
+        id: image
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          IMAGE_URI="$ACCOUNT_ID.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${GITHUB_SHA}"
+          echo "uri=$IMAGE_URI" >> $GITHUB_OUTPUT
+
+      - name: Push image to ECR using Jib (no Docker)
+        run: |
+          PASS="$(aws ecr get-login-password --region $AWS_REGION)"
+          ./gradlew jib \
+            -Pjib.to.image=${{ steps.image.outputs.uri }} \
+            -Djib.to.auth.username=AWS \
+            -Djib.to.auth.password="$PASS"
+
+      - name: Render task definition (inject new image)
+        id: render
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.TASK_DEF_PATH }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.image.outputs.uri }}
+
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ env.ECS_SERVICE }}
+          task-definition: ${{ steps.render.outputs.task-definition }}
+          wait-for-service-stability: true
