@@ -1,7 +1,7 @@
 package org.ama.berlin.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.ama.berlin.model.Order;
+import org.ama.berlin.dto.OrderResponse;
 import org.ama.berlin.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +16,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable int id) {
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable int id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 }
