@@ -11,7 +11,7 @@ description = 'berlin'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -48,7 +48,7 @@ tasks.named('test') {
 
 jib {
     from {
-        image = "eclipse-temurin:17-jre"
+        image = "eclipse-temurin:21-jre"
     }
     to {
         // default local image name (override in CI)
@@ -58,5 +58,11 @@ jib {
     container {
         ports = ["8080"]
         creationTime = "USE_CURRENT_TIMESTAMP"
+    }
+}
+
+tasks.register('hello') {
+    doLast {
+        println "Hello, Gradle!"
     }
 }

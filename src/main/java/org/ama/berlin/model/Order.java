@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -27,5 +27,5 @@ public class Order {
     private String description;
 
     @Column(name = "order_date_time")
-    private LocalDateTime orderDateTime;
+    private Instant orderDateTime;
 }
