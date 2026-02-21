@@ -3,6 +3,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/berlin
     username: postgres
     password: postgres
+  autoconfigure:
+    exclude: []
   jpa:
     hibernate:
       ddl-auto: none
