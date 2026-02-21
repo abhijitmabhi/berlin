@@ -12,7 +12,7 @@ env:
   AWS_REGION: eu-central-1
   ECR_REPOSITORY: orders-service
   ECS_CLUSTER: demo-cluster
-  ECS_SERVICE: orders-service
+  ECS_SERVICE: orders-task-service-zol1oz1e
   CONTAINER_NAME: orders
   TASK_DEF_PATH: ecs/taskdef.json
 
