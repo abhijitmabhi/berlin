@@ -12,7 +12,7 @@ env:
   AWS_REGION: eu-central-1
   ECR_REPOSITORY: orders-service
   ECS_CLUSTER: demo-cluster
-  ECS_SERVICE: orders-task-service-zol1oz1e
+  ECS_SERVICE: orders-service
   CONTAINER_NAME: orders
   TASK_DEF_PATH: ecs/taskdef.json
 
@@ -36,7 +36,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: arn:aws:iam::810929122523:role/github-actions-ecs-deploy-orders-service
+          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/<ROLE_NAME>
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Compute image URI

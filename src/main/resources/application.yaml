@@ -5,5 +5,4 @@ server:
 spring:
   application:
     name: berlin
-  profiles:
-    default: aws
+
