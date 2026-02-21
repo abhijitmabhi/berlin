@@ -1,0 +1,25 @@
+{
+  "family": "orders-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::810929122523:role/ecsTaskExecutionRole-orders-service",
+  "taskRoleArn": "arn:aws:iam::810929122523:role/orders-service-task-role",
+  "containerDefinitions": [
+    {
+      "name": "orders",
+      "image": "REPLACED_BY_CI",
+      "essential": true,
+      "portMappings": [{ "containerPort": 8080, "protocol": "tcp" }],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-region": "eu-central-1",
+          "awslogs-group": "/ecs/orders-service",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
