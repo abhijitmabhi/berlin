@@ -1,15 +1,31 @@
 package org.ama.berlin.model;
 
-import lombok.Builder;
-import lombok.Data;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
-@Data
-@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "orders")
 public class Order {
-    int id;
-    String title;
-    String description;
-    LocalDateTime orderDateTime;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    private String title;
+
+    private String description;
+
+    @Column(name = "order_date_time")
+    private Instant orderDateTime;
 }
