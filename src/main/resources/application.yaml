@@ -1,7 +1,6 @@
 server:
   port: 8080
 
-
 spring:
   application:
     name: berlin
@@ -9,3 +8,10 @@ spring:
 external:
   munich:
     base-url: http://localhost:9090
+
+resilience4j:
+  retry:
+    instances:
+      munich:
+        max-attempts: 3
+        wait-duration: 1s
