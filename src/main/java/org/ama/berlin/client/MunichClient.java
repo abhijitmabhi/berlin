@@ -1,5 +1,6 @@
 package org.ama.berlin.client;
 
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import org.ama.berlin.dto.MunichCustomer;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ public class MunichClient {
 
     private final WebClient munichWebClient;
 
+    @Retry(name = "munich")
     public List<MunichCustomer> getAllCustomers() {
         log.info("Calling Munich /api/v1/customers");
 
@@ -25,7 +27,7 @@ public class MunichClient {
                 .uri("/api/customer/getCustomers")
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<MunichCustomer>>() {})
-                .timeout(Duration.ofSeconds(3))
+                .timeout(Duration.ofSeconds(2))
                 .block();
     }
 }
