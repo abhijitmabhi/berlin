@@ -20,3 +20,13 @@ resilience4j:
         retryExceptions:
           - org.springframework.web.reactive.function.client.WebClientRequestException
           - java.util.concurrent.TimeoutException
+
+  circuitbreaker:
+    instances:
+      munich:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
