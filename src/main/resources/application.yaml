@@ -10,6 +10,22 @@ external:
     base-url: http://localhost:9090
 
 resilience4j:
+  bulkhead:
+    instances:
+      munich:
+        maxConcurrentCalls: 20
+        maxWaitDuration: 0ms
+
+  circuitbreaker:
+    instances:
+      munich:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+
   retry:
     instances:
       munich:
@@ -21,12 +37,3 @@ resilience4j:
           - org.springframework.web.reactive.function.client.WebClientRequestException
           - java.util.concurrent.TimeoutException
 
-  circuitbreaker:
-    instances:
-      munich:
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
-        permittedNumberOfCallsInHalfOpenState: 3

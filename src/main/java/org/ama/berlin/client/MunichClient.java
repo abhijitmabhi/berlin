@@ -1,5 +1,6 @@
 package org.ama.berlin.client;
 
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class MunichClient {
 
     private final WebClient munichWebClient;
 
+    @Bulkhead(name = "munich")
     @CircuitBreaker(name = "munich")
     @Retry(name = "munich")
     public List<MunichCustomer> getAllCustomers() {
