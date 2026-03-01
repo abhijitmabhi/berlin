@@ -34,6 +34,5 @@ resilience4j:
         enableExponentialBackoff: true
         exponentialBackoffMultiplier: 2
         retryExceptions:
-          - org.springframework.web.reactive.function.client.WebClientRequestException
-          - java.util.concurrent.TimeoutException
-
+          - org.springframework.web.client.ResourceAccessException
+          - java.net.SocketTimeoutException

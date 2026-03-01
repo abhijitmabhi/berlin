@@ -11,17 +11,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 
-import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
 public class MunichClient {
     private static final Logger log = LoggerFactory.getLogger(MunichClient.class);
 
-    private final WebClient munichWebClient;
+    private final RestClient munichRestClient;
 
     @Bulkhead(name = "munich")
     @CircuitBreaker(name = "munich")
@@ -29,22 +29,18 @@ public class MunichClient {
     public List<MunichCustomer> getAllCustomers() {
         log.info("Calling Munich /api/v1/customers");
 
-        return munichWebClient.get()
+        List<MunichCustomer> customers = munichRestClient.get()
                 .uri("/api/customer/getCustomers")
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, response ->
-                        response.bodyToMono(String.class)
-                                .defaultIfEmpty("")
-                                .map(body -> new MunichClientException("Munich returned 4xx: " + response.statusCode())))
-
-                .onStatus(HttpStatusCode::is5xxServerError, response ->
-                        response.bodyToMono(String.class)
-                                .defaultIfEmpty("")
-                                .map(body -> new MunichClientException("Munich returned 5xx: " + response.statusCode())))
-
-                .bodyToMono(new ParameterizedTypeReference<List<MunichCustomer>>() {
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                    throw new MunichClientException("Munich returned 4xx: " + response.getStatusCode());
                 })
-                .timeout(Duration.ofSeconds(2))
-                .block();
+                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                    throw new MunichClientException("Munich returned 5xx: " + response.getStatusCode());
+                })
+                .body(new ParameterizedTypeReference<>() {
+                });
+
+        return Objects.requireNonNullElse(customers, List.of());
     }
 }
