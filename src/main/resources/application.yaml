@@ -1,8 +1,38 @@
 server:
   port: 8080
 
-
 spring:
   application:
     name: berlin
 
+external:
+  munich:
+    base-url: http://localhost:9090
+
+resilience4j:
+  bulkhead:
+    instances:
+      munich:
+        maxConcurrentCalls: 20
+        maxWaitDuration: 0ms
+
+  circuitbreaker:
+    instances:
+      munich:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+
+  retry:
+    instances:
+      munich:
+        maxAttempts: 3
+        waitDuration: 500ms
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+        retryExceptions:
+          - org.springframework.web.client.ResourceAccessException
+          - java.net.SocketTimeoutException
